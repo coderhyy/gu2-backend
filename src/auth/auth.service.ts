@@ -1,27 +1,56 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { MembersService } from '../members/members.service';
+import bcrypt from 'bcrypt';
+
+import { Member } from '../members/entities/member.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    private membersService: MembersService,
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
-      return result;
+  async validateMember(
+    email: string,
+    password: string,
+  ): Promise<Omit<Member, 'password'> | null> {
+    const member = await this.membersService.findByEmail(email);
+    if (!member) {
+      return null;
     }
-    return null;
+
+    const isPasswordValid = await bcrypt.compare(password, member.password);
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    // 不返回密码字段
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...result } = member;
+    return result;
   }
 
-  login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+  login(member?: Member) {
+    if (!member) {
+      return null;
+    }
+
+    const payload = {
+      email: member.email,
+      sub: member.id,
+      role: member.role,
+    };
+
     return {
       access_token: this.jwtService.sign(payload),
+      member: {
+        id: member.id,
+        name: member.name,
+        email: member.email,
+        role: member.role,
+      },
     };
   }
 }
