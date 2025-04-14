@@ -1,53 +1,24 @@
 // src/events/dto/create-event.dto.ts
-import {
-  IsArray,
-  IsDate,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { EventType } from '../entities/event.entity';
+import { IsArray, IsDate, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateEventDto {
-  @IsNotEmpty()
   @IsString()
-  name: string;
-
   @IsNotEmpty()
-  @IsString()
-  location: string;
+  event_name: string;
 
-  @IsNotEmpty()
-  @Type(() => Date)
   @IsDate()
-  startTime: Date;
+  @IsNotEmpty()
+  event_date: Date;
 
-  @IsOptional()
-  @Type(() => Date)
-  @IsDate()
-  endTime?: Date;
-
-  @IsEnum(EventType)
-  @IsOptional()
-  eventType?: EventType;
-
-  @IsOptional()
   @IsString()
-  homeTeam?: string;
+  @IsNotEmpty()
+  event_location: string;
 
-  @IsOptional()
-  @IsString()
-  awayTeam?: string;
-
-  @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  participantIds?: string[];
+  @IsNotEmpty()
+  teams_involved: string[];
 
-  @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  coachIds?: string[];
+  @IsNotEmpty()
+  results: string[];
 }

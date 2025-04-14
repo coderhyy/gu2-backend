@@ -1,5 +1,4 @@
-// src/auth/role.enum.ts
-export enum Role {
+export enum MemberType {
   ADMIN = 'admin',
   COACH = 'coach',
   PLAYER = 'player',

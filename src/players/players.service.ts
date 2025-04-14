@@ -5,8 +5,10 @@ import { Repository } from 'typeorm';
 import { Player } from './entities/player.entity';
 import { CreatePlayerDto } from './dto/create-player.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
-import { TrainingRecordDto } from './dto/training-record.dto';
-import { MatchPerformanceDto } from './dto/match-performance.dto';
+import { PlayerPaginationDto } from './dto/player-pagination.dto';
+import { PageResponse } from '../common/dto/pagination.dto';
+// import { TrainingRecordDto } from './dto/training-record.dto';
+// import { MatchPerformanceDto } from './dto/match-performance.dto';
 
 @Injectable()
 export class PlayersService {
@@ -20,12 +22,43 @@ export class PlayersService {
     return this.playersRepository.save(player);
   }
 
-  async findAll(): Promise<Player[]> {
-    return this.playersRepository.find();
+  async findAll(
+    paginationDto: PlayerPaginationDto,
+  ): Promise<PageResponse<Player>> {
+    const { page = 1, size = 10 } = paginationDto;
+    const [players, total] = await this.playersRepository.findAndCount({
+      skip: (page - 1) * size,
+      take: size,
+      order: { player_id: 'ASC' },
+      relations: {
+        member: true,
+      },
+      select: {
+        member: {
+          name: true,
+          email: true,
+          phone: true,
+          date_of_birth: true,
+          registration_date: true,
+          member_type: true,
+          contact_info: true,
+        },
+      },
+    });
+
+    return {
+      data: players,
+      page,
+      size,
+      total,
+      totalPages: Math.ceil(total / size),
+    };
   }
 
   async findOne(id: string): Promise<Player> {
-    const player = await this.playersRepository.findOne({ where: { id } });
+    const player = await this.playersRepository.findOne({
+      where: { player_id: parseInt(id) },
+    });
     if (!player) {
       throw new NotFoundException(`Player with ID ${id} not found`);
     }
@@ -38,60 +71,60 @@ export class PlayersService {
     return this.playersRepository.save(updated);
   }
 
-  async recordTraining(
-    id: string,
-    trainingData: TrainingRecordDto,
-  ): Promise<Player> {
-    const player = await this.findOne(id);
+  // async recordTraining(
+  //   id: string,
+  //   trainingData: TrainingRecordDto,
+  // ): Promise<Player> {
+  //   const player = await this.findOne(id);
 
-    // Update player's game data with training information
-    if (!player.gameData) {
-      player.gameData = { training: [] };
-    }
+  //   // Update player's game data with training information
+  //   if (!player.gameData) {
+  //     player.gameData = { training: [] };
+  //   }
 
-    if (!player.gameData.training) {
-      player.gameData.training = [];
-    }
+  //   if (!player.gameData.training) {
+  //     player.gameData.training = [];
+  //   }
 
-    player.gameData.training.push({
-      ...trainingData,
-      date: new Date(),
-    });
+  //   player.gameData.training.push({
+  //     ...trainingData,
+  //     date: new Date(),
+  //   });
 
-    return this.playersRepository.save(player);
-  }
+  //   return this.playersRepository.save(player);
+  // }
 
-  async updateMatchPerformance(
-    id: string,
-    performanceData: MatchPerformanceDto,
-  ): Promise<Player> {
-    const player = await this.findOne(id);
+  // async updateMatchPerformance(
+  //   id: string,
+  //   performanceData: MatchPerformanceDto,
+  // ): Promise<Player> {
+  //   const player = await this.findOne(id);
 
-    // Update player's game data with match performance
-    if (!player.gameData) {
-      player.gameData = { matches: [] };
-    }
+  //   // Update player's game data with match performance
+  //   if (!player.gameData) {
+  //     player.gameData = { matches: [] };
+  //   }
 
-    if (!player.gameData.matches) {
-      player.gameData.matches = [];
-    }
+  //   if (!player.gameData.matches) {
+  //     player.gameData.matches = [];
+  //   }
 
-    player.gameData.matches.push({
-      ...performanceData,
-      date: new Date(),
-    });
+  //   player.gameData.matches.push({
+  //     ...performanceData,
+  //     date: new Date(),
+  //   });
 
-    // Update player statistics
-    if (performanceData.goalsScored) {
-      player.goalsScored += performanceData.goalsScored;
-    }
+  //   // Update player statistics
+  //   if (performanceData.goalsScored) {
+  //     player.goalsScored += performanceData.goalsScored;
+  //   }
 
-    if (performanceData.assists) {
-      player.assists += performanceData.assists;
-    }
+  //   if (performanceData.assists) {
+  //     player.assists += performanceData.assists;
+  //   }
 
-    return this.playersRepository.save(player);
-  }
+  //   return this.playersRepository.save(player);
+  // }
 
   async remove(id: string): Promise<void> {
     const result = await this.playersRepository.delete(id);

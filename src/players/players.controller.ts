@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { PlayersService } from './players.service';
 import { CreatePlayerDto } from './dto/create-player.dto';
@@ -17,6 +18,7 @@ import { MatchPerformanceDto } from './dto/match-performance.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
+import { PlayerPaginationDto } from './dto/player-pagination.dto';
 
 @Controller('players')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -30,8 +32,8 @@ export class PlayersController {
   }
 
   @Get()
-  findAll() {
-    return this.playersService.findAll();
+  findAll(@Query() paginationDto: PlayerPaginationDto) {
+    return this.playersService.findAll(paginationDto);
   }
 
   @Get(':id')
@@ -51,7 +53,7 @@ export class PlayersController {
     @Param('id') id: string,
     @Body() trainingData: TrainingRecordDto,
   ) {
-    return this.playersService.recordTraining(id, trainingData);
+    // return this.playersService.recordTraining(id, trainingData);
   }
 
   @Post(':id/match-performance')
@@ -60,7 +62,7 @@ export class PlayersController {
     @Param('id') id: string,
     @Body() performanceData: MatchPerformanceDto,
   ) {
-    return this.playersService.updateMatchPerformance(id, performanceData);
+    // return this.playersService.updateMatchPerformance(id, performanceData);
   }
 
   @Delete(':id')

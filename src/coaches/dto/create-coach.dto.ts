@@ -1,32 +1,21 @@
-// src/coaches/dto/create-coach.dto.ts
-import {
-  IsArray,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { CreateMemberDto } from '../../members/dto/create-member.dto';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Member } from '../../members/entities/member.entity';
+import { ManyToOne, JoinColumn } from 'typeorm';
 
-export class CreateCoachDto extends CreateMemberDto {
+export class CreateCoachDto {
   @IsNotEmpty()
-  @IsString()
-  coachId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  responsibleTeam: string;
-
-  @IsOptional()
-  @IsString()
-  specialty?: string;
-
-  @IsOptional()
   @IsNumber()
-  experience?: number;
+  member_id: number;
+
+  @ManyToOne(() => Member)
+  @JoinColumn({ name: 'member_id' })
+  member: Member;
 
   @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  certifications?: string[];
+  @IsString()
+  team_name?: string;
+
+  @IsOptional()
+  @IsString()
+  contact_info?: string;
 }

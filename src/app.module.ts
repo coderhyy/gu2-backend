@@ -9,6 +9,10 @@ import { PlayersModule } from './players/players.module';
 import { CoachesModule } from './coaches/coaches.module';
 import { EventsModule } from './events/events.module';
 import { ConfigModule } from '@nestjs/config';
+import { TrainingsModule } from './trainings/trainings.module';
+import { TrainingRecordsModule } from './training-records/training-records.module';
+import { ConsentFormsModule } from './consent-forms/consent-forms.module';
+import { MatchPerformanceModule } from './match-performance/match-performance.module';
 
 @Module({
   imports: [
@@ -30,6 +34,10 @@ import { ConfigModule } from '@nestjs/config';
     PlayersModule,
     CoachesModule,
     EventsModule,
+    TrainingsModule,
+    TrainingRecordsModule,
+    ConsentFormsModule,
+    MatchPerformanceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

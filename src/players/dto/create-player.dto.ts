@@ -1,21 +1,33 @@
-// src/players/dto/create-player.dto.ts
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { Position, SkillLevel } from '../entities/player.entity';
-import { CreateMemberDto } from '../../members/dto/create-member.dto';
+import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
+import { Member } from '../../members/entities/member.entity';
+import { ManyToOne, JoinColumn } from 'typeorm';
 
-export class CreatePlayerDto extends CreateMemberDto {
+export class CreatePlayerDto {
   @IsNotEmpty()
-  @IsString()
-  playerNumber: string;
+  @IsNumber()
+  member_id: number;
 
-  @IsNotEmpty()
-  @IsString()
-  team: string;
+  @ManyToOne(() => Member)
+  @JoinColumn({ name: 'member_id' })
+  member: Member;
 
-  @IsEnum(Position)
-  position: Position;
-
-  @IsEnum(SkillLevel)
   @IsOptional()
-  skillLevel?: SkillLevel;
+  @IsString()
+  team_name?: string;
+
+  @IsOptional()
+  @IsString()
+  position?: string;
+
+  @IsOptional()
+  @IsString()
+  skill_level?: string;
+
+  @IsOptional()
+  @IsString()
+  performance_data?: string;
+
+  @IsOptional()
+  @IsNumber()
+  coach_id?: number;
 }

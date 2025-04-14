@@ -1,52 +1,43 @@
-// src/players/entities/player.entity.ts
-import { Entity, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Member } from '../../members/entities/member.entity';
-import { Coach } from '../../coaches/entities/coach.entity';
+import { TrainingRecord } from 'src/training-records/entities/training-record.entity';
+import { ConsentForm } from 'src/consent-forms/entities/consent-form.entity';
+import { MatchPerformance } from 'src/match-performance/entities/match-performance.entity';
 
-export enum Position {
-  FORWARD = 'forward',
-  MIDFIELDER = 'midfielder',
-  DEFENDER = 'defender',
-  GOALKEEPER = 'goalkeeper',
-}
+@Entity('players')
+export class Player {
+  @PrimaryGeneratedColumn()
+  player_id: number;
 
-export enum SkillLevel {
-  BEGINNER = 'beginner',
-  INTERMEDIATE = 'intermediate',
-  ADVANCED = 'advanced',
-  PROFESSIONAL = 'professional',
-}
+  @Column({ nullable: true })
+  team_name: string;
 
-@Entity()
-export class Player extends Member {
-  @Column({ unique: true })
-  playerNumber: string;
+  @Column({ nullable: true })
+  position: string;
 
-  @Column()
-  team: string;
+  @Column({ nullable: true })
+  skill_level: string;
 
-  @Column({
-    type: 'enum',
-    enum: Position,
-  })
-  position: Position;
+  @Column({ type: 'text', nullable: true })
+  performance_data: string;
 
-  @Column({
-    type: 'enum',
-    enum: SkillLevel,
-    default: SkillLevel.BEGINNER,
-  })
-  skillLevel: SkillLevel;
+  @ManyToOne(() => Member, (member) => member.players)
+  @JoinColumn({ name: 'member_id' })
+  member: Member;
 
-  @Column({ type: 'json', nullable: true })
-  gameData: any;
+  @OneToMany(() => TrainingRecord, (record) => record.player)
+  training_records: TrainingRecord[];
 
-  @Column({ type: 'int', default: 0 })
-  goalsScored: number;
+  @OneToMany(() => ConsentForm, (consent) => consent.player)
+  consent_forms: ConsentForm[];
 
-  @Column({ type: 'int', default: 0 })
-  assists: number;
-
-  @ManyToOne(() => Coach, (coach) => coach.players)
-  coach: Coach;
+  @OneToMany(() => MatchPerformance, (performance) => performance.player)
+  performances: MatchPerformance[];
 }

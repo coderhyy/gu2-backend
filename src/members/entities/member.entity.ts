@@ -4,52 +4,48 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
-import { Role } from '../../auth/role.enum';
+import { MemberType } from '../../auth/role.enum';
+import { Coach } from '../../coaches/entities/coach.entity';
+import { Player } from '../../players/entities/player.entity';
 
-export enum MembershipType {
-  REGULAR = 'regular',
-  PREMIUM = 'premium',
-  VIP = 'vip',
-}
-
-@Entity()
+@Entity('members')
 export class Member {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  member_id: number;
 
-  @Column()
+  @Column({ length: 100 })
   name: string;
 
-  @Column({ unique: true })
-  email: string;
-
-  @Column()
-  phone: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  contact_info?: string;
 
   @Column({
     type: 'enum',
-    enum: MembershipType,
-    default: MembershipType.REGULAR,
+    enum: MemberType,
+    default: MemberType.MEMBER,
   })
-  membershipType: MembershipType;
-
-  @Column()
-  password: string;
+  member_type: MemberType;
 
   @CreateDateColumn()
-  registrationTime: Date;
+  registration_date: Date;
 
-  @Column({ nullable: true })
-  address: string;
+  @Column({ length: 255 })
+  password: string;
 
-  @Column({ default: true })
-  isActive: boolean;
+  @Column({ length: 100, unique: true })
+  email: string;
 
-  @Column({
-    type: 'enum',
-    enum: Role,
-    default: Role.MEMBER,
-  })
-  role: Role;
+  @Column({ length: 20, nullable: true })
+  phone: string;
+
+  @Column({ type: 'date', nullable: true })
+  date_of_birth: Date;
+
+  @OneToMany(() => Coach, (coach) => coach.member)
+  coaches: Coach[];
+
+  @OneToMany(() => Player, (player) => player.member)
+  players: Player[];
 }

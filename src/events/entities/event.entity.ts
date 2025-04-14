@@ -1,65 +1,30 @@
 // src/events/entities/event.entity.ts
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToMany,
-  JoinTable,
-  CreateDateColumn,
-} from 'typeorm';
-import { Player } from '../../players/entities/player.entity';
-import { Coach } from '../../coaches/entities/coach.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { MatchPerformance } from '../../match-performance/entities/match-performance.entity';
 
-export enum EventType {
-  MATCH = 'match',
-  TRAINING = 'training',
-  FRIENDLY = 'friendly',
-}
-
-@Entity()
+@Entity('events')
 export class Event {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  event_id: number;
 
   @Column()
-  name: string;
+  event_name: string;
 
   @Column()
-  location: string;
+  event_date: Date;
 
-  @Column({ type: 'timestamp' })
-  startTime: Date;
+  @Column()
+  event_location: string;
 
-  @Column({ type: 'timestamp', nullable: true })
-  endTime: Date;
+  @Column({ type: 'text' })
+  teams_involved: string;
 
-  @Column({
-    type: 'enum',
-    enum: EventType,
-    default: EventType.MATCH,
-  })
-  eventType: EventType;
+  @Column({ type: 'text' })
+  results: string;
 
-  @Column({ nullable: true })
-  homeTeam: string;
+  @Column()
+  created_at: Date;
 
-  @Column({ nullable: true })
-  awayTeam: string;
-
-  @Column({ nullable: true })
-  score: string;
-
-  @Column({ type: 'json', nullable: true })
-  result: any;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @ManyToMany(() => Player)
-  @JoinTable()
-  participants: Player[];
-
-  @ManyToMany(() => Coach)
-  @JoinTable()
-  coaches: Coach[];
+  @OneToMany(() => MatchPerformance, (performance) => performance.event)
+  performances: MatchPerformance[];
 }

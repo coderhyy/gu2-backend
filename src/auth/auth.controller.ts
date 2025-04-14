@@ -9,17 +9,38 @@ import { CreateMemberDto } from '../members/dto/create-member.dto';
 import { MembersService } from '../members/members.service';
 import { Request } from 'express';
 import { Member } from '../members/entities/member.entity';
+import { CoachesService } from '../coaches/coaches.service';
+import { PlayersService } from '../players/players.service';
+import { MemberType } from './role.enum';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
     private membersService: MembersService,
+    private coachesService: CoachesService,
+    private playersService: PlayersService,
   ) {}
 
   @Post('register')
   async register(@Body() createMemberDto: CreateMemberDto) {
     const member = await this.membersService.register(createMemberDto);
+
+    // 根据会员类型创建相应的角色记录
+    if (createMemberDto.member_type === MemberType.COACH) {
+      await this.coachesService.create({
+        member_id: member.member_id,
+        member,
+        ...createMemberDto,
+      });
+    } else if (createMemberDto.member_type === MemberType.PLAYER) {
+      await this.playersService.create({
+        member_id: member.member_id,
+        member,
+        ...createMemberDto,
+      });
+    }
+
     return this.authService.login(member);
   }
 

@@ -1,24 +1,29 @@
-import { Entity, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Member } from '../../members/entities/member.entity';
-import { Player } from '../../players/entities/player.entity';
+import { Training } from 'src/trainings/entities/training.entity';
 
-@Entity()
-export class Coach extends Member {
-  @Column({ unique: true })
-  coachId: string;
-
-  @Column()
-  responsibleTeam: string;
+@Entity('coaches')
+export class Coach {
+  @PrimaryGeneratedColumn()
+  coach_id: number;
 
   @Column({ nullable: true })
-  specialty: string;
+  team_name: string;
 
   @Column({ nullable: true })
-  experience: number;
+  contact_info: string;
 
-  @Column({ type: 'json', nullable: true })
-  certifications: string[];
+  @ManyToOne(() => Member, (member) => member.coaches)
+  @JoinColumn({ name: 'member_id' })
+  member: Member;
 
-  @OneToMany(() => Player, (player) => player.coach)
-  players: Player[];
+  @OneToMany(() => Training, (training) => training.coach)
+  trainings: Training[];
 }

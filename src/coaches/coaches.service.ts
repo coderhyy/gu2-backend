@@ -24,12 +24,25 @@ export class CoachesService {
   }
 
   async findAll(): Promise<Coach[]> {
-    return this.coachesRepository.find();
+    return this.coachesRepository.find({
+      relations: ['member'],
+      select: {
+        member: {
+          name: true,
+          email: true,
+          phone: true,
+          date_of_birth: true,
+          registration_date: true,
+          member_type: true,
+          contact_info: true,
+        },
+      },
+    });
   }
 
   async findOne(id: string): Promise<Coach> {
     const coach = await this.coachesRepository.findOne({
-      where: { id },
+      where: { coach_id: parseInt(id) },
       relations: ['players'],
     });
 
@@ -53,7 +66,7 @@ export class CoachesService {
     const coach = await this.findOne(coachId);
 
     const player = await this.playersRepository.findOne({
-      where: { id: playerData.playerId },
+      where: { player_id: parseInt(playerData.playerId) },
     });
 
     if (!player) {
@@ -63,22 +76,22 @@ export class CoachesService {
     }
 
     // Update player profile with coach's notes
-    player.coach = coach;
+    player.team_name = coach.team_name;
 
-    if (!player.gameData) {
-      player.gameData = {};
-    }
+    // if (!player.gameData) {
+    //   player.gameData = {};
+    // }
 
-    if (!player.gameData.coachNotes) {
-      player.gameData.coachNotes = [];
-    }
+    // if (!player.gameData.coachNotes) {
+    //   player.gameData.coachNotes = [];
+    // }
 
-    player.gameData.coachNotes.push({
-      coachId: coach.id,
-      coachName: coach.name,
-      notes: playerData.notes,
-      date: new Date(),
-    });
+    // player.gameData.coachNotes.push({
+    //   coachId: coach.coach_id,
+    //   coachName: coach.name,
+    //   notes: playerData.notes,
+    //   date: new Date(),
+    // });
 
     return this.playersRepository.save(player);
   }
@@ -94,9 +107,9 @@ export class CoachesService {
     // For simplicity, we'll just return the plan with coach information
 
     return {
-      coachId: coach.id,
-      coachName: coach.name,
-      team: coach.responsibleTeam,
+      coachId: coach.coach_id,
+      coachName: coach.member.name,
+      team: coach.team_name,
       trainingPlan: {
         ...trainingPlan,
         createdAt: new Date(),
@@ -107,7 +120,7 @@ export class CoachesService {
   async viewPlayerList(coachId: string): Promise<Player[]> {
     const coach = await this.findOne(coachId);
     return this.playersRepository.find({
-      where: { coach: { id: coach.id } },
+      where: { team_name: coach.team_name },
     });
   }
 
