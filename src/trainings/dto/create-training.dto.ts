@@ -1,4 +1,10 @@
-import { IsDateString, IsNotEmpty, IsString, IsArray, IsNumber } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsString,
+  IsArray,
+  IsNumber,
+} from 'class-validator';
 
 export class CreateTrainingDto {
   @IsDateString()

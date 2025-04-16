@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, In } from 'typeorm';
 import { CreateTrainingDto } from './dto/create-training.dto';
@@ -32,8 +36,8 @@ export class TrainingsService {
     }
 
     // 查找球员
-    const players = await this.playerRepository.findBy({ 
-      player_id: In(player_ids) 
+    const players = await this.playerRepository.findBy({
+      player_id: In(player_ids),
     });
     if (players.length !== player_ids.length) {
       throw new BadRequestException('部分球员ID不存在');
@@ -73,10 +77,17 @@ export class TrainingsService {
     }
   }
 
-  async findAll() {
-    return this.trainingRepository.find({
+  async findAll(args: { page: number; size: number }) {
+    const { page = 1, size = 10 } = args;
+    const [trainings, total] = await this.trainingRepository.findAndCount({
       relations: ['coach', 'training_records', 'training_records.player'],
+      skip: (page - 1) * size,
+      take: size,
     });
+    return {
+      data: trainings,
+      total,
+    };
   }
 
   async findOne(id: number) {
@@ -84,11 +95,11 @@ export class TrainingsService {
       where: { training_id: id },
       relations: ['coach', 'training_records', 'training_records.player'],
     });
-    
+
     if (!training) {
       throw new NotFoundException(`训练计划ID ${id} 不存在`);
     }
-    
+
     return training;
   }
 
@@ -101,15 +112,38 @@ export class TrainingsService {
 
   async update(id: number, updateTrainingDto: UpdateTrainingDto) {
     const training = await this.findOne(id);
-    
+
     // 更新训练信息
     Object.assign(training, updateTrainingDto);
-    
+
     return this.trainingRepository.save(training);
   }
 
   async remove(id: number) {
-    const training = await this.findOne(id);
-    return this.trainingRepository.remove(training);
+    // 使用事务确保数据一致性
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // 先删除关联的训练记录
+      await this.trainingRecordRepository.delete({
+        training: { training_id: id },
+      });
+
+      // 然后删除训练
+      const training = await this.findOne(id);
+      const result = await this.trainingRepository.remove(training);
+
+      await queryRunner.commitTransaction();
+      return result;
+    } catch (err) {
+      // 如果出错，回滚事务
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      // 释放查询运行器
+      await queryRunner.release();
+    }
   }
 }
