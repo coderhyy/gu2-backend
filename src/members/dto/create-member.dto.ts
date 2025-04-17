@@ -47,6 +47,10 @@ export class CreateMemberDto {
   @IsOptional()
   phone?: string;
 
+  @IsString()
+  @IsOptional()
+  consent_form_url?: string;
+
   @IsOptional()
   @IsDate()
   @Type(() => Date)

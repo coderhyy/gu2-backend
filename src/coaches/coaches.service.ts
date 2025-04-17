@@ -40,14 +40,25 @@ export class CoachesService {
     });
   }
 
-  async findOne(id: string): Promise<Coach> {
+  async findOne(id: string | { member_id: string }): Promise<Coach> {
+    let query: Record<string, any>;
+
+    if (typeof id === 'string') {
+      query = { coach_id: parseInt(id) };
+    } else {
+      // 通过关系查询member_id
+      query = {
+        member: { member_id: parseInt(id.member_id) },
+      };
+    }
+
     const coach = await this.coachesRepository.findOne({
-      where: { coach_id: parseInt(id) },
-      relations: ['players'],
+      where: query,
+      relations: ['member'],
     });
 
     if (!coach) {
-      throw new NotFoundException(`Coach with ID ${id} not found`);
+      throw new NotFoundException(`Coach not found`);
     }
 
     return coach;

@@ -55,12 +55,20 @@ export class PlayersService {
     };
   }
 
-  async findOne(id: string): Promise<Player> {
+  async findOne(id: string | { member_id: string }): Promise<Player> {
+    let query: Record<string, any>;
+
+    if (typeof id === 'string') {
+      query = { player_id: parseInt(id) };
+    } else {
+      query = { member: { member_id: parseInt(id.member_id) } };
+    }
     const player = await this.playersRepository.findOne({
-      where: { player_id: parseInt(id) },
+      where: query,
+      relations: ['member'],
     });
     if (!player) {
-      throw new NotFoundException(`Player with ID ${id} not found`);
+      throw new NotFoundException(`Player not found`);
     }
     return player;
   }

@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { MembersService } from '../members/members.service';
@@ -9,6 +6,9 @@ import * as bcrypt from 'bcrypt';
 import { MemberType } from './role.enum';
 import { PlayersService } from '../players/players.service';
 import { CoachesService } from '../coaches/coaches.service';
+import { Player } from '../players/entities/player.entity';
+import { Coach } from '../coaches/entities/coach.entity';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,8 +18,9 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateMember(email: string, password: string): Promise<any | null> {
+  async validateMember(email: string, password: string) {
     const member = await this.membersService.findByEmail(email);
+
     if (!member) {
       return null;
     }
@@ -34,9 +35,9 @@ export class AuthService {
     const { password: _, ...result } = member;
 
     if (member.member_type === MemberType.PLAYER) {
-      const player = await this.playersService.findOne(
-        member.member_id.toString(),
-      );
+      const player = await this.playersService.findOne({
+        member_id: member.member_id.toString(),
+      });
       if (player) {
         return {
           ...result,
@@ -46,9 +47,9 @@ export class AuthService {
     }
 
     if (member.member_type === MemberType.COACH) {
-      const coach = await this.coachesService.findOne(
-        member.member_id.toString(),
-      );
+      const coach = await this.coachesService.findOne({
+        member_id: member.member_id.toString(),
+      });
       if (coach) {
         return {
           ...result,
@@ -60,26 +61,26 @@ export class AuthService {
     return result;
   }
 
-  login(member?: any) {
+  login(member?: Record<string, any>) {
     if (!member) {
       return null;
     }
 
     const payload = {
-      email: member.email,
-      sub: member.member_id,
-      member_type: member.member_type,
+      email: member.email as string,
+      sub: member.member_id as number,
+      member_type: member.member_type as MemberType,
     };
 
     return {
       token: this.jwtService.sign(payload),
       user: {
-        id: member.member_id,
-        name: member.name,
-        email: member.email,
-        member_type: member.member_type,
-        player: member.player,
-        coach: member.coach,
+        id: member.member_id as number,
+        name: member.name as string,
+        email: member.email as string,
+        member_type: member.member_type as MemberType,
+        player: member.player as Player,
+        coach: member.coach as Coach,
       },
     };
   }

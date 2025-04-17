@@ -13,6 +13,7 @@ import { TrainingsModule } from './trainings/trainings.module';
 import { TrainingRecordsModule } from './training-records/training-records.module';
 import { ConsentFormsModule } from './consent-forms/consent-forms.module';
 import { MatchPerformanceModule } from './match-performance/match-performance.module';
+import { UploadsModule } from './uploads/uploads.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MatchPerformanceModule } from './match-performance/match-performance.mo
     TrainingRecordsModule,
     ConsentFormsModule,
     MatchPerformanceModule,
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

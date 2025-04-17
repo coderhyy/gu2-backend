@@ -43,6 +43,9 @@ export class Member {
   @Column({ type: 'date', nullable: true })
   date_of_birth: Date;
 
+  @Column({ nullable: true })
+  consent_form_url: string;
+
   @OneToMany(() => Coach, (coach) => coach.member)
   coaches: Coach[];
 
