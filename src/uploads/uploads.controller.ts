@@ -16,6 +16,21 @@ import { UploadFileResponseDto } from './dto/upload-file-response.dto';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { Response } from 'express';
+import * as multer from 'multer';
+
+// 添加Multer类型声明
+declare global {
+  namespace Express {
+    namespace Multer {
+      interface File {
+        filename: string;
+        originalname: string;
+        mimetype: string;
+        size: number;
+      }
+    }
+  }
+}
 
 @Controller('uploads')
 export class UploadsController {

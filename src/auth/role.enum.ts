@@ -3,4 +3,6 @@ export enum MemberType {
   COACH = 'coach',
   PLAYER = 'player',
   MEMBER = 'member',
+  EVENT_ASSISTANT = 'event_assistant',
+  CHAIRMAN = 'chairman',
 }
