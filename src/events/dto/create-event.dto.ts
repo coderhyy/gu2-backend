@@ -45,4 +45,14 @@ export class CreateEventDto {
   @IsOptional()
   @Type(() => Number)
   coach_ids?: number[];
+
+  @IsArray()
+  @IsOptional()
+  @Type(() => Number)
+  rule_ids?: number[];
+  
+  @IsArray()
+  @IsOptional()
+  @Type(() => Number)
+  team_ids?: number[];
 }

@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Member } from '../../members/entities/member.entity';
 import { Training } from 'src/trainings/entities/training.entity';
+import { Team } from '../../teams/entities/team.entity';
 
 @Entity('coaches')
 export class Coach {
@@ -23,6 +24,10 @@ export class Coach {
   @ManyToOne(() => Member, (member) => member.coaches)
   @JoinColumn({ name: 'member_id' })
   member: Member;
+
+  @ManyToOne(() => Team, (team) => team.coaches)
+  @JoinColumn({ name: 'team_id' })
+  team: Team;
 
   @OneToMany(() => Training, (training) => training.coach)
   trainings: Training[];

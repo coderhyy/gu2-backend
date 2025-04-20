@@ -13,6 +13,9 @@ import { MatchPerformance } from '../../match-performance/entities/match-perform
 import { Player } from '../../players/entities/player.entity';
 import { Coach } from '../../coaches/entities/coach.entity';
 import { Member } from '../../members/entities/member.entity';
+import { Schedule } from '../../schedules/entities/schedule.entity';
+import { GameRule } from '../../game-rules/entities/game-rule.entity';
+import { Team } from '../../teams/entities/team.entity';
 
 export enum EventStatus {
   DRAFT = 'draft',
@@ -77,6 +80,20 @@ export class Event {
   })
   coaches: Coach[];
 
+  @ManyToMany(() => Team)
+  @JoinTable({
+    name: 'event_teams',
+    joinColumn: { name: 'event_id', referencedColumnName: 'event_id' },
+    inverseJoinColumn: { name: 'team_id', referencedColumnName: 'team_id' }
+  })
+  teams: Team[];
+
   @OneToMany(() => MatchPerformance, (performance) => performance.event)
   performances: MatchPerformance[];
+
+  @OneToMany(() => Schedule, (schedule) => schedule.event, { cascade: true })
+  schedules: Schedule[];
+
+  @ManyToMany(() => GameRule, (rule) => rule.events)
+  rules: GameRule[];
 }

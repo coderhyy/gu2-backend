@@ -8,6 +8,8 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { Player } from '../players/entities/player.entity';
 import { Coach } from '../coaches/entities/coach.entity';
 import { Member } from '../members/entities/member.entity';
+import { Team } from '../teams/entities/team.entity';
+import { GameRule } from '../game-rules/entities/game-rule.entity';
 
 @Injectable()
 export class EventsService {
@@ -20,6 +22,10 @@ export class EventsService {
     private coachesRepository: Repository<Coach>,
     @InjectRepository(Member)
     private membersRepository: Repository<Member>,
+    @InjectRepository(Team)
+    private teamsRepository: Repository<Team>,
+    @InjectRepository(GameRule)
+    private rulesRepository: Repository<GameRule>,
   ) {}
 
   async createCompetition(createEventDto: CreateEventDto) {
@@ -69,26 +75,52 @@ export class EventsService {
       event.coaches = coaches;
     }
 
+    // 如果有队伍，添加队伍
+    if (createEventDto.team_ids && createEventDto.team_ids.length > 0) {
+      const teams = await this.teamsRepository.findBy({
+        team_id: In(createEventDto.team_ids),
+      });
+      
+      if (teams.length !== createEventDto.team_ids.length) {
+        throw new BadRequestException('Some team IDs are invalid');
+      }
+
+      event.teams = teams;
+    }
+
+    // 如果有规则，添加规则
+    if (createEventDto.rule_ids && createEventDto.rule_ids.length > 0) {
+      const rules = await this.rulesRepository.findBy({
+        rule_id: In(createEventDto.rule_ids),
+      });
+      
+      if (rules.length !== createEventDto.rule_ids.length) {
+        throw new BadRequestException('Some rule IDs are invalid');
+      }
+
+      event.rules = rules;
+    }
+
     return this.eventsRepository.save(event);
   }
 
   async findAll(): Promise<Event[]> {
     return this.eventsRepository.find({
-      relations: ['participants', 'coaches', 'created_by'],
+      relations: ['participants', 'coaches', 'created_by', 'teams', 'rules'],
     });
   }
 
   async findAllPublished(): Promise<Event[]> {
     return this.eventsRepository.find({
       where: { status: EventStatus.PUBLISHED },
-      relations: ['participants', 'coaches'],
+      relations: ['participants', 'coaches', 'teams', 'rules'],
     });
   }
 
   async queryCompetitionDetails(id: number) {
     const event = await this.eventsRepository.findOne({
       where: { event_id: id },
-      relations: ['participants', 'coaches', 'created_by'],
+      relations: ['participants', 'coaches', 'created_by', 'teams', 'rules'],
     });
 
     if (!event) {
@@ -139,6 +171,32 @@ export class EventsService {
       }
 
       event.coaches = coaches;
+    }
+
+    // 更新关联队伍
+    if (updateEventDto.team_ids) {
+      const teams = await this.teamsRepository.findBy({
+        team_id: In(updateEventDto.team_ids),
+      });
+      
+      if (teams.length !== updateEventDto.team_ids.length) {
+        throw new BadRequestException('Some team IDs are invalid');
+      }
+
+      event.teams = teams;
+    }
+
+    // 更新游戏规则
+    if (updateEventDto.rule_ids) {
+      const rules = await this.rulesRepository.findBy({
+        rule_id: In(updateEventDto.rule_ids),
+      });
+      
+      if (rules.length !== updateEventDto.rule_ids.length) {
+        throw new BadRequestException('Some rule IDs are invalid');
+      }
+
+      event.rules = rules;
     }
 
     return this.eventsRepository.save(event);

@@ -7,13 +7,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MembersModule } from './members/members.module';
 import { PlayersModule } from './players/players.module';
 import { CoachesModule } from './coaches/coaches.module';
-import { EventsModule } from './events/events.module';
 import { ConfigModule } from '@nestjs/config';
 import { TrainingsModule } from './trainings/trainings.module';
 import { TrainingRecordsModule } from './training-records/training-records.module';
 import { ConsentFormsModule } from './consent-forms/consent-forms.module';
 import { MatchPerformanceModule } from './match-performance/match-performance.module';
 import { UploadsModule } from './uploads/uploads.module';
+import { TeamsModule } from './teams/teams.module';
+import { GameRulesModule } from './game-rules/game-rules.module';
+import { EventsModule } from './events/events.module';
+import { SchedulesModule } from './schedules/schedules.module';
 
 @Module({
   imports: [
@@ -34,7 +37,10 @@ import { UploadsModule } from './uploads/uploads.module';
     MembersModule,
     PlayersModule,
     CoachesModule,
+    TeamsModule,
+    GameRulesModule,
     EventsModule,
+    SchedulesModule,
     TrainingsModule,
     TrainingRecordsModule,
     ConsentFormsModule,
