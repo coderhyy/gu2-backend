@@ -18,10 +18,10 @@ export class ConsentForm {
   @Column()
   guardian_contact_info: string;
 
-  @Column({ type: 'tinyint' })
+  @Column({ type: 'tinyint', default: false })
   consent_signed: boolean;
 
-  @Column()
+  @Column({ nullable: true })
   signed_date: Date;
 
   @ManyToOne(() => Player, (player) => player.consent_forms)

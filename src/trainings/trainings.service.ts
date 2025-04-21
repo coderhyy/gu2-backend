@@ -32,7 +32,7 @@ export class TrainingsService {
     // 查找教练
     const coach = await this.coachRepository.findOne({ where: { coach_id } });
     if (!coach) {
-      throw new NotFoundException(`教练ID ${coach_id} 不存在`);
+      throw new NotFoundException(`Coach with id ${coach_id} not found`);
     }
 
     // 查找球员
@@ -40,7 +40,7 @@ export class TrainingsService {
       player_id: In(player_ids),
     });
     if (players.length !== player_ids.length) {
-      throw new BadRequestException('部分球员ID不存在');
+      throw new BadRequestException('Some player IDs do not exist');
     }
 
     // 使用事务来确保数据一致性
@@ -62,7 +62,7 @@ export class TrainingsService {
         const trainingRecord = this.trainingRecordRepository.create({
           player,
           training,
-          performance: '', // 初始为空，将在训练后填写
+          performance: '', // Initial empty, will be filled after training
         });
         await queryRunner.manager.save(trainingRecord);
       }
@@ -97,7 +97,7 @@ export class TrainingsService {
     });
 
     if (!training) {
-      throw new NotFoundException(`训练计划ID ${id} 不存在`);
+      throw new NotFoundException(`Training plan with id ${id} not found`);
     }
 
     return training;

@@ -37,11 +37,14 @@ export class EventsController {
 
   @Post()
   @Roles(MemberType.ADMIN, MemberType.EVENT_ASSISTANT, MemberType.CHAIRMAN)
-  createCompetition(@Body() createEventDto: CreateEventDto, @Req() req: RequestWithUser) {
+  createCompetition(
+    @Body() createEventDto: CreateEventDto,
+    @Req() req: RequestWithUser,
+  ) {
     if (!req.user) {
       throw new UnauthorizedException('用户未认证');
     }
-    
+
     // 将当前用户设为创建者
     createEventDto.created_by = req.user.sub;
     return this.eventsService.createCompetition(createEventDto);
@@ -53,7 +56,7 @@ export class EventsController {
   }
 
   @Get()
-  @Roles(MemberType.ADMIN, MemberType.EVENT_ASSISTANT, MemberType.CHAIRMAN)
+  // @Roles(MemberType.ADMIN, MemberType.EVENT_ASSISTANT, MemberType.CHAIRMAN)
   findAll() {
     return this.eventsService.findAll();
   }
@@ -73,20 +76,20 @@ export class EventsController {
     if (!req.user) {
       throw new UnauthorizedException('用户未认证');
     }
-    
+
     // 获取当前用户角色
     const userRole = req.user.member_type;
-    
+
     // 如果不是管理员或主席，获取赛事详情检查创建者
     if (userRole !== MemberType.ADMIN && userRole !== MemberType.CHAIRMAN) {
       const event = await this.eventsService.queryCompetitionDetails(+id);
-      
+
       // 只有创建者、管理员或主席可以编辑
       if (event.created_by?.member_id !== req.user.sub) {
         throw new ForbiddenException('只有创建者、管理员或主席可以编辑赛事');
       }
     }
-    
+
     return this.eventsService.updateCompetitionInfo(+id, updateEventDto);
   }
 
@@ -96,20 +99,20 @@ export class EventsController {
     if (!req.user) {
       throw new UnauthorizedException('用户未认证');
     }
-    
+
     // 获取当前用户角色
     const userRole = req.user.member_type;
-    
+
     // 如果不是管理员或主席，获取赛事详情检查创建者
     if (userRole !== MemberType.ADMIN && userRole !== MemberType.CHAIRMAN) {
       const event = await this.eventsService.queryCompetitionDetails(+id);
-      
+
       // 只有创建者、管理员或主席可以发布
       if (event.created_by?.member_id !== req.user.sub) {
         throw new ForbiddenException('只有创建者、管理员或主席可以发布赛事');
       }
     }
-    
+
     return this.eventsService.publishEvent(+id);
   }
 

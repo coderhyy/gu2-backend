@@ -1,5 +1,9 @@
 // src/events/events.service.ts
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Event, EventStatus } from './entities/event.entity';
@@ -45,16 +49,21 @@ export class EventsService {
     });
 
     if (!creator) {
-      throw new NotFoundException(`Member with ID ${createEventDto.created_by} not found`);
+      throw new NotFoundException(
+        `Member with ID ${createEventDto.created_by} not found`,
+      );
     }
     event.created_by = creator;
 
     // 如果有参与者，添加参与者
-    if (createEventDto.participant_ids && createEventDto.participant_ids.length > 0) {
+    if (
+      createEventDto.participant_ids &&
+      createEventDto.participant_ids.length > 0
+    ) {
       const players = await this.playersRepository.findBy({
         player_id: In(createEventDto.participant_ids),
       });
-      
+
       if (players.length !== createEventDto.participant_ids.length) {
         throw new BadRequestException('Some participant IDs are invalid');
       }
@@ -67,7 +76,7 @@ export class EventsService {
       const coaches = await this.coachesRepository.findBy({
         coach_id: In(createEventDto.coach_ids),
       });
-      
+
       if (coaches.length !== createEventDto.coach_ids.length) {
         throw new BadRequestException('Some coach IDs are invalid');
       }
@@ -80,7 +89,7 @@ export class EventsService {
       const teams = await this.teamsRepository.findBy({
         team_id: In(createEventDto.team_ids),
       });
-      
+
       if (teams.length !== createEventDto.team_ids.length) {
         throw new BadRequestException('Some team IDs are invalid');
       }
@@ -93,7 +102,7 @@ export class EventsService {
       const rules = await this.rulesRepository.findBy({
         rule_id: In(createEventDto.rule_ids),
       });
-      
+
       if (rules.length !== createEventDto.rule_ids.length) {
         throw new BadRequestException('Some rule IDs are invalid');
       }
@@ -135,15 +144,22 @@ export class EventsService {
 
     // 更新基本信息
     if (updateEventDto.event_name) event.event_name = updateEventDto.event_name;
-    if (updateEventDto.event_date) event.event_date = new Date(updateEventDto.event_date);
-    if (updateEventDto.event_location) event.event_location = updateEventDto.event_location;
-    if (updateEventDto.event_description) event.event_description = updateEventDto.event_description;
+    if (updateEventDto.event_date)
+      event.event_date = new Date(updateEventDto.event_date);
+    if (updateEventDto.event_location)
+      event.event_location = updateEventDto.event_location;
+    if (updateEventDto.event_description)
+      event.event_description = updateEventDto.event_description;
     if (updateEventDto.status) event.status = updateEventDto.status;
-    if (updateEventDto.teams_involved) event.teams_involved = updateEventDto.teams_involved;
+    if (updateEventDto.teams_involved)
+      event.teams_involved = updateEventDto.teams_involved;
     if (updateEventDto.results) event.results = updateEventDto.results;
 
     // 如果状态变为已发布且之前未发布，设置发布时间
-    if (updateEventDto.status === EventStatus.PUBLISHED && event.status !== EventStatus.PUBLISHED) {
+    if (
+      updateEventDto.status === EventStatus.PUBLISHED &&
+      event.status !== EventStatus.PUBLISHED
+    ) {
       event.published_at = new Date();
     }
 
@@ -152,7 +168,7 @@ export class EventsService {
       const players = await this.playersRepository.findBy({
         player_id: In(updateEventDto.participant_ids),
       });
-      
+
       if (players.length !== updateEventDto.participant_ids.length) {
         throw new BadRequestException('Some participant IDs are invalid');
       }
@@ -165,7 +181,7 @@ export class EventsService {
       const coaches = await this.coachesRepository.findBy({
         coach_id: In(updateEventDto.coach_ids),
       });
-      
+
       if (coaches.length !== updateEventDto.coach_ids.length) {
         throw new BadRequestException('Some coach IDs are invalid');
       }
@@ -178,7 +194,7 @@ export class EventsService {
       const teams = await this.teamsRepository.findBy({
         team_id: In(updateEventDto.team_ids),
       });
-      
+
       if (teams.length !== updateEventDto.team_ids.length) {
         throw new BadRequestException('Some team IDs are invalid');
       }
@@ -191,7 +207,7 @@ export class EventsService {
       const rules = await this.rulesRepository.findBy({
         rule_id: In(updateEventDto.rule_ids),
       });
-      
+
       if (rules.length !== updateEventDto.rule_ids.length) {
         throw new BadRequestException('Some rule IDs are invalid');
       }
@@ -204,10 +220,10 @@ export class EventsService {
 
   async publishEvent(id: number) {
     const event = await this.queryCompetitionDetails(id);
-    
+
     event.status = EventStatus.PUBLISHED;
     event.published_at = new Date();
-    
+
     return this.eventsRepository.save(event);
   }
 

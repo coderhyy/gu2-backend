@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConsentFormsService } from './consent-forms.service';
 import { CreateConsentFormDto } from './dto/create-consent-form.dto';
 import { UpdateConsentFormDto } from './dto/update-consent-form.dto';
@@ -23,7 +34,10 @@ export class ConsentFormsController {
 
   @Post()
   @Roles(MemberType.ADMIN, MemberType.COACH, MemberType.PLAYER)
-  create(@Body() createConsentFormDto: CreateConsentFormDto, @Req() req: RequestWithUser) {
+  create(
+    @Body() createConsentFormDto: CreateConsentFormDto,
+    @Req() req: RequestWithUser,
+  ) {
     if (!req.user) {
       throw new UnauthorizedException('用户未认证');
     }
@@ -35,7 +49,11 @@ export class ConsentFormsController {
     if (!req.user) {
       throw new UnauthorizedException('用户未认证');
     }
-    return this.consentFormsService.findAll(req.user.sub, req.user.member_type);
+
+    return this.consentFormsService.findAll(
+      req.user.userId,
+      req.user.member_type,
+    );
   }
 
   @Get('player/:playerId')
@@ -49,19 +67,28 @@ export class ConsentFormsController {
     if (!req.user) {
       throw new UnauthorizedException('用户未认证');
     }
-    return this.consentFormsService.findOne(+id, req.user.sub, req.user.member_type);
+    return this.consentFormsService.findOne(
+      +id,
+      req.user.sub,
+      req.user.member_type,
+    );
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string, 
+    @Param('id') id: string,
     @Body() updateConsentFormDto: UpdateConsentFormDto,
-    @Req() req: RequestWithUser
+    @Req() req: RequestWithUser,
   ) {
     if (!req.user) {
       throw new UnauthorizedException('用户未认证');
     }
-    return this.consentFormsService.update(+id, updateConsentFormDto, req.user.sub, req.user.member_type);
+    return this.consentFormsService.update(
+      +id,
+      updateConsentFormDto,
+      req.user.sub,
+      req.user.member_type,
+    );
   }
 
   @Delete(':id')
@@ -70,6 +97,10 @@ export class ConsentFormsController {
     if (!req.user) {
       throw new UnauthorizedException('用户未认证');
     }
-    return this.consentFormsService.remove(+id, req.user.sub, req.user.member_type);
+    return this.consentFormsService.remove(
+      +id,
+      req.user.sub,
+      req.user.member_type,
+    );
   }
 }

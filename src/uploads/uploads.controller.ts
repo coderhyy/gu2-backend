@@ -16,21 +16,6 @@ import { UploadFileResponseDto } from './dto/upload-file-response.dto';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { Response } from 'express';
-import * as multer from 'multer';
-
-// 添加Multer类型声明
-declare global {
-  namespace Express {
-    namespace Multer {
-      interface File {
-        filename: string;
-        originalname: string;
-        mimetype: string;
-        size: number;
-      }
-    }
-  }
-}
 
 @Controller('uploads')
 export class UploadsController {
@@ -41,7 +26,7 @@ export class UploadsController {
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file: Express.Multer.File): UploadFileResponseDto {
     if (!file) {
-      throw new BadRequestException('文件不能为空');
+      throw new BadRequestException('File cannot be empty');
     }
 
     return {
@@ -58,7 +43,7 @@ export class UploadsController {
     const path = join(process.cwd(), 'uploads', filename);
 
     if (!existsSync(path)) {
-      throw new BadRequestException('文件不存在');
+      throw new BadRequestException('File does not exist');
     }
 
     return res.sendFile(path);

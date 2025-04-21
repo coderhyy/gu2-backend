@@ -1,5 +1,12 @@
-import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateConsentFormDto {
   @IsNotEmpty()
@@ -12,12 +19,12 @@ export class CreateConsentFormDto {
 
   @IsBoolean()
   @IsOptional()
-  consent_signed?: boolean = true;
+  consent_signed?: boolean = false;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
-  signed_date?: Date = new Date();
+  signed_date?: Date;
 
   @IsNotEmpty()
   @IsNumber()

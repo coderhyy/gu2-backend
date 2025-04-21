@@ -15,10 +15,10 @@ export class GameRulesService {
   async create(createGameRuleDto: CreateGameRuleDto) {
     const gameRule = this.gameRuleRepository.create(createGameRuleDto);
     await this.gameRuleRepository.save(gameRule);
-    
+
     return {
-      message: '游戏规则创建成功',
-      data: gameRule
+      message: 'Game rule created successfully',
+      data: gameRule,
     };
   }
 
@@ -26,13 +26,13 @@ export class GameRulesService {
     const gameRules = await this.gameRuleRepository.find({
       order: {
         category: 'ASC',
-        rule_name: 'ASC'
-      }
+        rule_name: 'ASC',
+      },
     });
-    
+
     return {
-      message: '获取所有游戏规则成功',
-      data: gameRules
+      message: 'Get all game rules successfully',
+      data: gameRules,
     };
   }
 
@@ -40,64 +40,64 @@ export class GameRulesService {
     const gameRules = await this.gameRuleRepository.find({
       where: { category },
       order: {
-        rule_name: 'ASC'
-      }
+        rule_name: 'ASC',
+      },
     });
-    
+
     return {
-      message: `获取类别为 ${category} 的游戏规则成功`,
-      data: gameRules
+      message: `Get game rules with category ${category} successfully`,
+      data: gameRules,
     };
   }
 
   async findOne(id: number) {
     const gameRule = await this.gameRuleRepository.findOne({
       where: { rule_id: id },
-      relations: ['events']
+      relations: ['events'],
     });
-    
+
     if (!gameRule) {
-      throw new NotFoundException(`ID 为 ${id} 的游戏规则不存在`);
+      throw new NotFoundException(`Game rule with id ${id} not found`);
     }
-    
+
     return {
-      message: '获取游戏规则成功',
-      data: gameRule
+      message: 'Get game rule successfully',
+      data: gameRule,
     };
   }
 
   async update(id: number, updateGameRuleDto: UpdateGameRuleDto) {
     const gameRule = await this.gameRuleRepository.findOne({
-      where: { rule_id: id }
+      where: { rule_id: id },
     });
-    
+
     if (!gameRule) {
-      throw new NotFoundException(`ID 为 ${id} 的游戏规则不存在`);
+      throw new NotFoundException(`Game rule with id ${id} not found`);
     }
-    
+
     this.gameRuleRepository.merge(gameRule, updateGameRuleDto);
     await this.gameRuleRepository.save(gameRule);
-    
+
     return {
-      message: '游戏规则更新成功',
-      data: gameRule
+      message: 'Game rule updated successfully',
+      data: gameRule,
     };
   }
 
   async remove(id: number) {
     const gameRule = await this.gameRuleRepository.findOne({
-      where: { rule_id: id }
+      where: { rule_id: id },
     });
-    
+
     if (!gameRule) {
-      throw new NotFoundException(`ID 为 ${id} 的游戏规则不存在`);
+      throw new NotFoundException(`Game rule with id ${id} not found`);
     }
-    
+
     await this.gameRuleRepository.remove(gameRule);
-    
+
     return {
-      message: '游戏规则删除成功',
-      data: { id }
+      message: 'Game rule deleted successfully',
+      data: { id },
     };
   }
-} 
+}

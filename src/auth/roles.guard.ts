@@ -1,5 +1,10 @@
 // src/auth/roles.guard.ts
-import { Injectable, CanActivate, ExecutionContext, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Logger,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 
@@ -17,7 +22,7 @@ export class RolesGuard implements CanActivate {
     ]);
 
     this.logger.log(`Required roles: ${JSON.stringify(requiredRoles)}`);
-    
+
     if (!requiredRoles) {
       this.logger.log('No roles required, allowing access');
       return true;
@@ -25,21 +30,21 @@ export class RolesGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
     this.logger.log(`Request headers: ${JSON.stringify(request.headers)}`);
-    
+
     const { user } = request;
-    
+
     if (!user) {
       this.logger.warn('User object is undefined in request');
       return false;
     }
-    
+
     // 记录日志
     this.logger.log(`User role: ${user.member_type}`);
     this.logger.log(`User object: ${JSON.stringify(user)}`);
-    
+
     const hasRole = requiredRoles.some((role) => user.member_type === role);
     this.logger.log(`Has required role: ${hasRole}`);
-    
+
     // 使用member_type字段作为角色标识
     return hasRole;
   }
