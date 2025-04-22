@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, IsNumber, IsArray } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsArray,
+  IsDateString,
+} from 'class-validator';
 
 export class CreateTeamDto {
   @IsNotEmpty()
@@ -14,8 +20,8 @@ export class CreateTeamDto {
   description?: string;
 
   @IsOptional()
-  @IsNumber()
-  founded_year?: number;
+  @IsDateString()
+  founded_year?: string;
 
   @IsOptional()
   @IsString()
@@ -28,4 +34,4 @@ export class CreateTeamDto {
   @IsOptional()
   @IsArray()
   coach_ids?: number[];
-} 
+}

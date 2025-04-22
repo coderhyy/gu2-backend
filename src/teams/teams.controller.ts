@@ -1,12 +1,12 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Patch, 
-  Param, 
-  Delete, 
-  UseGuards 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
@@ -22,7 +22,7 @@ export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
   @Post()
-  @Roles(MemberType.ADMIN, MemberType.EVENT_ASSISTANT, MemberType.CHAIRMAN)
+  // @Roles(MemberType.ADMIN, MemberType.EVENT_ASSISTANT, MemberType.CHAIRMAN)
   create(@Body() createTeamDto: CreateTeamDto) {
     return this.teamsService.create(createTeamDto);
   }
@@ -48,4 +48,4 @@ export class TeamsController {
   remove(@Param('id') id: string) {
     return this.teamsService.remove(+id);
   }
-} 
+}

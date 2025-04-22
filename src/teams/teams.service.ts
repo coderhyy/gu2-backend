@@ -85,7 +85,7 @@ export class TeamsService {
     if (updateTeamDto.logo_url) team.logo_url = updateTeamDto.logo_url;
     if (updateTeamDto.description) team.description = updateTeamDto.description;
     if (updateTeamDto.founded_year)
-      team.founded_year = updateTeamDto.founded_year;
+      team.founded_year = new Date(updateTeamDto.founded_year);
     if (updateTeamDto.home_venue) team.home_venue = updateTeamDto.home_venue;
 
     // 更新球员关联

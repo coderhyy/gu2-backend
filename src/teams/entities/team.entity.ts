@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToMany,
-  JoinTable
 } from 'typeorm';
 import { Player } from '../../players/entities/player.entity';
 import { Coach } from '../../coaches/entities/coach.entity';
@@ -27,7 +26,7 @@ export class Team {
   description: string;
 
   @Column({ nullable: true })
-  founded_year: number;
+  founded_year: Date;
 
   @Column({ nullable: true })
   home_venue: string;
@@ -46,4 +45,4 @@ export class Team {
 
   @UpdateDateColumn()
   updated_at: Date;
-} 
+}
