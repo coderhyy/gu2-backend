@@ -17,6 +17,7 @@ import { TeamsModule } from './teams/teams.module';
 import { GameRulesModule } from './game-rules/game-rules.module';
 import { EventsModule } from './events/events.module';
 import { SchedulesModule } from './schedules/schedules.module';
+import { NotifyModule } from './notify/notify.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { SchedulesModule } from './schedules/schedules.module';
     ConsentFormsModule,
     MatchPerformanceModule,
     UploadsModule,
+    NotifyModule,
   ],
   controllers: [AppController],
   providers: [AppService],
