@@ -123,8 +123,17 @@ export class NotifyService {
   }
 
   async update(id: number, updateNotifyDto: UpdateNotifyDto) {
+    const team = await this.teamRepository.findOne({
+      where: { team_id: updateNotifyDto.team_id },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`team ${updateNotifyDto.team_id} not found`);
+    }
+
     const notification = await this.findOne(id);
     Object.assign(notification, updateNotifyDto);
+    notification.team = team;
     return this.notifyRepository.save(notification);
   }
 
